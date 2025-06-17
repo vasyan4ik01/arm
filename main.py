@@ -16,7 +16,7 @@ FILES_TO_PROCESS = {
 }
 
 def analyze_data(df, start_date, end_date, norms_dict, point_name):
-    df = df[(df['Дата'] >= pd.to_datetime(start_date)) & (df['Дата'] <= pd.to_datetime(end_date))]
+    df = df[(df['Дата'] >= pd.to_datetime(start_date)) & (df['Дата'] <= pd.to_datetime(end_date))] #filtruemsya po date
     df = df.reset_index(drop=True)
 
     result_rows = []
@@ -24,7 +24,7 @@ def analyze_data(df, start_date, end_date, norms_dict, point_name):
     # === ОБЫЧНАЯ ОБРАБОТКА ДЛЯ ВСЕХ КРОМЕ ФЕНОЛА ===
     for col in df.columns:
         if col in ['Дата', 'Время', 'Фенол']:
-            continue  # Пропускаем дату, время и сам фенол (он ниже отдельно)
+            continue  # скипаем дату, время и сам фенол
         
         try:
             values = pd.to_numeric(df[col].dropna(), errors='coerce').dropna()
@@ -34,7 +34,7 @@ def analyze_data(df, start_date, end_date, norms_dict, point_name):
         if values.empty:
             continue
 
-        lower, upper = norms_dict.get(col, (None, None))
+        lower, upper = norms_dict.get(col, (None, None)) #moxhet proeb logiki
 
         exceed_count = sum(
             (upper is not None and v > upper) or
@@ -54,7 +54,7 @@ def analyze_data(df, start_date, end_date, norms_dict, point_name):
             'Процент превышений': round((exceed_count / len(values)) * 100, 2)
         })
 
-    # === СПЕЦИАЛЬНАЯ ОБРАБОТКА ФЕНОЛА ПО ИЗМЕРЕНИЯМ ===
+    # === 4isto fenol po izmereniyam v sutki ===
     if 'Фенол' in df.columns:
         df['Дата'] = pd.to_datetime(df['Дата'].ffill(), errors='coerce')
         df['DateOnly'] = df['Дата'].dt.date
@@ -63,7 +63,7 @@ def analyze_data(df, start_date, end_date, norms_dict, point_name):
         phenol_df['Фенол'] = pd.to_numeric(phenol_df['Фенол'], errors='coerce')
         grouped = phenol_df.groupby('DateOnly')['Фенол'].apply(list)
 
-        max_measurements = 6
+        max_measurements = 6 #ну допустим их всегда будет 6
         lower, upper = norms_dict.get('Фенол', (None, None))
 
         for i in range(max_measurements):
@@ -108,12 +108,12 @@ def save_report(df_result, point_name):
 def main():
     os.makedirs(REPORT_DIR, exist_ok=True)
 
-    # Чтение периода из config.xlsx
+    #  периода из config.xlsx
     config = pd.read_excel(CONFIG_FILE)
     start_date = config['Дата_начала'][0].date()
     end_date = config['Дата_окончания'][0].date()
 
-    # Чтение нормативов
+    # loading normativov
     norms = pd.read_excel(NORMS_FILE)
     norms_dicts = defaultdict(dict)
     for _, row in norms.iterrows():
