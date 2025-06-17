@@ -53,5 +53,5 @@
 С уважением,
 Василий
 P.S. Вероятность, что я смогу помочь удаленно, если что-то отвалиться низкая, но не нулевая) 
-![изображение](https://github.com/user-attachments/assets/c4d9bca5-ae13-44be-9015-ec0323005611){:width="10%"}
+<img src='https://github.com/user-attachments/assets/c4d9bca5-ae13-44be-9015-ec0323005611' width="250" height="250">
 
